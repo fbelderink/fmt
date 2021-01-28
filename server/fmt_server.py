@@ -10,6 +10,7 @@ pathlib.Path(app.config["DEFAULT_PATH"]).mkdir(exist_ok=True)
 
 @app.route("/pull/<path:path>", methods=['GET'])
 def pull(path):
+    path = path.strip("'")
     filename = os.path.abspath(app.config["DEFAULT_PATH"] + path).split("/")[-1]
     safe_path = safe_join(app.config["DEFAULT_PATH"], path)
     try:

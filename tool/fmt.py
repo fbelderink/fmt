@@ -24,26 +24,29 @@ if __name__ == "__main__":
 
     if args.commands == "pull":
         ip = args.ip
-        fromPathServer = args.fromPath if args.fromPath != None else ""
-        toDirClient = args.toDir if args.toDir != None else ""
+        fromPathServer = f"'{ args.fromPath }'"  if args.fromPath != None else "'.'"
+        toDirClient = args.toDir if args.toDir != None else os.path.abspath(".")
         res = requests.get("http://" + ip + "/pull/" + fromPathServer)
 
-        filename = res.headers['Content-Disposition'].split("=")[-1]
-        file_extension = filename.split(".")[-1]
-        if file_extension == "zip":
-            with zipfile.ZipFile(io.BytesIO(res.content), "r") as zip_ref:
-                zip_ref.extractall(toDirClient)
-        else:
-            pathlib.Path(toDirClient).mkdir(exist_ok=True)
-            f = open(os.path.join(toDirClient, filename), 'wb')
-            f.write(res.content)
-            f.close()
+        if res.status_code == 404:
+            print("file not found on server")
+        elif res.status_code == 200:
+
+            filename = res.headers['Content-Disposition'].split("=")[-1]
+            file_extension = filename.split(".")[-1]
+            if file_extension == "zip":
+                with zipfile.ZipFile(io.BytesIO(res.content), "r") as zip_ref:
+                    zip_ref.extractall(toDirClient)
+            else:
+                pathlib.Path(toDirClient).mkdir(exist_ok=True)
+                f = open(os.path.join(toDirClient, filename), 'wb')
+                f.write(res.content)
+                f.close()
 
     elif args.commands == "push":
         ip = args.ip
         fromPathClient = args.fromPath if args.fromPath != None else os.path.abspath(".")
         toDirServer = f"'{ args.toDir }'"  if args.toDir != None else "'.'"
-        print(toDirServer)
 
         if os.path.isdir(fromPathClient):
             memory_file = io.BytesIO()
