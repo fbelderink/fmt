@@ -41,20 +41,21 @@ if __name__ == "__main__":
 
     elif args.commands == "push":
         ip = args.ip
-        fromPathClient = args.fromPath
-        toDirServer = args.toDir
+        fromPathClient = args.fromPath if args.fromPath != None else os.path.abspath(".")
+        toDirServer = f"'{ args.toDir }'"  if args.toDir != None else "'.'"
+        print(toDirServer)
 
         if os.path.isdir(fromPathClient):
             memory_file = io.BytesIO()
             zip_file = zipfile.ZipFile(memory_file, "w", zipfile.ZIP_DEFLATED)
             zipdir(fromPathClient, zip_file)
             zip_file.close()
-            memory_file.name = os.path.abspath(fromPathClient).split("/")[-1] + ".zip"
+            memory_file.name = fromPathClient.split("/")[-1] + ".zip"
             memory_file.seek(0)
             files = { "file": memory_file }
         else:
             files = { "file": open(fromPathClient, 'rb') }
-        
+
         res = requests.post("http://" + ip + "/push/" + toDirServer, files=files)
         if res.status_code == 200:
             print("uploaded data successful!")

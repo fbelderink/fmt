@@ -31,15 +31,12 @@ def pull(path):
 
 @app.route("/push/<path:path>", methods=["POST"])
 def push(path):
-    print(path)
-    path = "" if path == "none" else path
-    print(request.files)
+    path = path.strip("'")
     file = request.files["file"]
     safe_path = safe_join(app.config["DEFAULT_PATH"], path)
     pathlib.Path(safe_path).mkdir(exist_ok=True)
     if file:
         filename = secure_filename(file.filename)
-        print(filename)
         file.save(os.path.join(safe_path, filename))
         if ".zip" in filename:
             with zipfile.ZipFile(os.path.join(safe_path, filename), "r") as zip_ref:
