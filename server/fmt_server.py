@@ -11,7 +11,6 @@ pathlib.Path(app.config["DEFAULT_PATH"]).mkdir(exist_ok=True)
 @app.route("/pull/<path:path>", methods=['GET'])
 def pull(path):
     filename = os.path.abspath(app.config["DEFAULT_PATH"] + path).split("/")[-1]
-    print(filename)
     safe_path = safe_join(app.config["DEFAULT_PATH"], path)
     try:
         if os.path.isdir(safe_path):

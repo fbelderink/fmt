@@ -24,8 +24,8 @@ if __name__ == "__main__":
 
     if args.commands == "pull":
         ip = args.ip
-        fromPathServer = args.fromPath
-        toDirClient = args.toDir
+        fromPathServer = args.fromPath if args.fromPath != None else ""
+        toDirClient = args.toDir if args.toDir != None else ""
         res = requests.get("http://" + ip + "/pull/" + fromPathServer)
 
         filename = res.headers['Content-Disposition'].split("=")[-1]
@@ -35,11 +35,7 @@ if __name__ == "__main__":
                 zip_ref.extractall(toDirClient)
         else:
             pathlib.Path(toDirClient).mkdir(exist_ok=True)
-            if toDirClient == None:
-                f = open(filename,'wb')
-            else:
-                f = open(os.path.join(toDirClient, filename), 'wb')
-
+            f = open(os.path.join(toDirClient, filename), 'wb')
             f.write(res.content)
             f.close()
 
