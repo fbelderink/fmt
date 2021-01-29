@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import argparse, requests, os, pathlib, zipfile,io
 
 def zipdir(path, ziph):
@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     if args.commands == "pull":
         ip = args.ip
-        fromPathServer = f"'{ args.fromPath }'"  if args.fromPath != None else "'.'"
+        fromPathServer = f"'{ args.fromPath }'" if args.fromPath != None else "'.'"
         toDirClient = args.toDir if args.toDir != None else os.path.abspath(".")
         res = requests.get("http://" + ip + "/pull/" + fromPathServer)
 
